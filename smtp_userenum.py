@@ -4,6 +4,10 @@ import socket
 import sys
 import threading
 
+# GLOBALS
+threads = []
+max_threads = 10
+
 def verify_username(username, target_ip):
     # Create a Socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,7 +17,6 @@ def verify_username(username, target_ip):
 
     # Receive the banner
     banner = s.recv(1024)
-    print(banner)
 
     # VRFY a user
     user = username.encode()
@@ -26,9 +29,19 @@ def verify_username(username, target_ip):
     # Close the socket
     s.close()
 
-if len(sys.argv) < 3:
+def join_threads():
+    global threads
+    # Wait for all threads to finish
+    for thread in threads:
+        thread.join()
+    threads = []
+
+def usage():
     print(f"Usage: {sys.argv[0]} <username or file> <target_ip>")
     sys.exit(0)
+
+if len(sys.argv) < 3:
+    usage()
 
 target_ip = sys.argv[2]
 
@@ -40,17 +53,19 @@ if sys.argv[1].endswith('.txt'):
             usernames = file.read().splitlines()
     except IOError:
         print(f"Error: Failed to read usernames file '{usernames_file}'")
-        sys.exit(0)
+        usage()
 
-    threads = []
+    print("[!] Beginning Enumeration")
+    print(f"[!] {len(usernames)} usernames to test")
+
     for username in usernames:
         thread = threading.Thread(target=verify_username, args=(username, target_ip))
         thread.start()
         threads.append(thread)
 
-    # Wait for all threads to finish
-    for thread in threads:
-        thread.join()
+        count = len(threads)
+        if count >= max_threads:
+            join_threads()
 
 else:
     username = sys.argv[1]
