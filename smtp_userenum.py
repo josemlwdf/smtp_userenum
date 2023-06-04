@@ -7,9 +7,12 @@ import threading
 # GLOBALS
 threads = []
 max_threads = 10
+exiting = False
 
 def verify_username(username, target_ip):
     # Create a Socket
+    global exiting
+    if exiting: return
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Connect to the Server
@@ -25,6 +28,12 @@ def verify_username(username, target_ip):
 
     if b"250" in result:  # User exists
         print(username)
+        
+    if b"503" in result:  # User exists
+        if exiting: return
+        print("[-] 503 SMTP error code. Need to authenticate")
+        exiting = True
+        sys.exit()
 
     # Close the socket
     s.close()
@@ -60,6 +69,7 @@ if sys.argv[1].endswith('.txt'):
 
     for username in usernames:
         thread = threading.Thread(target=verify_username, args=(username, target_ip))
+        if exiting: break
         thread.start()
         threads.append(thread)
 
