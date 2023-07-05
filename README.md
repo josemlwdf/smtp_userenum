@@ -12,7 +12,7 @@ The script creates a separate thread for each username verification to allow for
 
 To use the script, execute it from the command line using the following format:
 
-    python script.py <username or file> <target_ip>
+    python smtp_userenum.py <username or file> <target_ip>
 
 ``Replace script.py with the name of the script file.
 
@@ -26,11 +26,11 @@ Ensure that you have the necessary permissions to execute the script and that Py
 
 Verify a single username:
 
-    python script.py john.doe@example.com 192.168.0.1
+    python smtp_userenum.py john.doe@example.com 192.168.0.1
 
 Verify multiple usernames from a file:
 
-    python script.py usernames.txt 192.168.0.1
+    python smtp_userenum.py usernames.txt 192.168.0.1
 
 
 ## Important Note
