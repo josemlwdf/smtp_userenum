@@ -28,8 +28,11 @@ def verify_username(username, target_ip):
 
     if b"250" in result:  # User exists
         print(username)
-        
-    if b"503" in result:  # User exists
+    elif b"252" in result:  # User exists
+        print(username)
+    elif b"450" in result:  # User exists
+        print(username)
+    elif b"503" in result
         if exiting: return
         print("[-] 503 SMTP error code. Need to authenticate")
         exiting = True
